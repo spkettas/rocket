@@ -8,9 +8,10 @@ import (
 )
 
 type Game struct {
-	Input *Input
-	Ship  *Ship
-	Cfg   *Config
+	Input   *Input               // 键盘输入
+	Ship    *Ship                // 飞船
+	Cfg     *Config              // 配置
+	bullets map[*Bullet]struct{} // 多个子弹
 }
 
 func NewGame() *Game {
@@ -21,14 +22,27 @@ func NewGame() *Game {
 	ebiten.SetWindowTitle(cfg.Title)
 
 	return &Game{
-		Input: &Input{},
-		Ship:  NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
-		Cfg:   cfg,
+		Input:   &Input{},
+		Ship:    NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
+		Cfg:     cfg,
+		bullets: make(map[*Bullet]struct{}),
 	}
 }
 
+// addBullet 添加子弹
+func (g *Game) addBullet(bullet *Bullet) {
+	g.bullets[bullet] = struct{}{}
+}
+
 func (g *Game) Update() error {
-	g.Input.Update(g.Ship, g.Cfg)
+	// 更新飞船
+	g.Input.Update(g)
+
+	// 更新子弹的垂直移动
+	for bullet := range g.bullets {
+		bullet.Y -= bullet.SpeedFactor
+	}
+
 	return nil
 }
 
@@ -36,7 +50,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(g.Cfg.BgColor)
 	ebitenutil.DebugPrint(screen, g.Input.Msg)
 
+	// 飞船
 	g.Ship.Draw(screen, g.Cfg)
+
+	// 子弹
+	for bullet := range g.bullets {
+		bullet.Draw(screen)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
