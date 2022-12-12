@@ -1,40 +1,45 @@
 package main
 
 import (
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct {
-	input *Input
-	ship  *Ship
-	cfg   *Config
+	Input *Input
+	Ship  *Ship
+	Cfg   *Config
 }
 
 func NewGame() *Game {
 	cfg := loadConfig()
+	log.Printf("cfg=%v", cfg)
+
 	ebiten.SetWindowSize(cfg.ScreenWidth, cfg.ScreenHeight)
 	ebiten.SetWindowTitle(cfg.Title)
 
 	return &Game{
-		input: &Input{},
-		ship:  NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
-		cfg:   cfg,
+		Input: &Input{},
+		Ship:  NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
+		Cfg:   cfg,
 	}
 }
 
 func (g *Game) Update() error {
-	g.input.Update(g.ship, g.cfg)
+	g.Input.Update(g.Ship, g.Cfg)
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	//screen.Fill(color.RGBA{R: 200, G: 200, B: 200, A: 255})
-	//ebitenutil.DebugPrint(screen, g.input.msg)
+	screen.Fill(g.Cfg.BgColor)
+	ebitenutil.DebugPrint(screen, g.Input.Msg)
 
-	screen.Fill(g.cfg.BgColor)
-	g.ship.Draw(screen, g.cfg)
+	g.Ship.Draw(screen, g.Cfg)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return g.cfg.ScreenWidth / 2, g.cfg.ScreenHeight / 2
+	return g.Cfg.ScreenWidth, g.Cfg.ScreenHeight
+	//return g.Cfg.ScreenWidth / 2, g.Cfg.ScreenHeight / 2
 }

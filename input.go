@@ -1,23 +1,25 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Input struct {
-	msg string
+	Msg string
 }
 
 func (i *Input) Update(ship *Ship, cfg *Config) {
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		fmt.Println("←←←←←←←←←←←←←←←←←←←←←←←")
-		i.msg = "left pressed"
-		ship.x -= cfg.ShipSpeedFactor
+		log.Printf("press key left")
+
+		i.Msg = "left pressed"
+		ship.X -= cfg.ShipSpeedFactor
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		fmt.Println("→→→→→→→→→→→→→→→→→→→→→→→")
-		i.msg = "right pressed"
-		ship.x += cfg.ShipSpeedFactor
+		log.Printf("press key right")
+
+		i.Msg = "right pressed"
+		ship.X += cfg.ShipSpeedFactor
 	}
 }
