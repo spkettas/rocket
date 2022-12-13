@@ -22,6 +22,10 @@ func (bullet *Bullet) Draw(screen *ebiten.Image) {
 	screen.DrawImage(bullet.Image, op)
 }
 
+func (bullet *Bullet) OutOfScreen() bool {
+	return bullet.Y < -float64(bullet.Height)
+}
+
 func NewBullet(cfg *Config, ship *Ship) *Bullet {
 	rect := image.Rect(0, 0, cfg.BulletWidth, cfg.BulletHeight)
 

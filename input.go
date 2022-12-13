@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -27,8 +26,6 @@ func (i *Input) Update(g *Game) {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) { // <-
-		log.Printf("press key left")
-
 		i.Msg = "left pressed"
 		g.Ship.X -= g.Cfg.ShipSpeedFactor
 
@@ -37,8 +34,6 @@ func (i *Input) Update(g *Game) {
 			g.Ship.X = -float64(g.Ship.width) / 2
 		}
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) { // ->
-		log.Printf("press key right")
-
 		i.Msg = "right pressed"
 		g.Ship.X += g.Cfg.ShipSpeedFactor
 
