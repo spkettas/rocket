@@ -22,6 +22,9 @@ type Config struct {
 	BulletInterval    int64      `json:"bulletInterval"` // 子弹间隔
 
 	AlienSpeedFactor float64 `json:"alienSpeedFactor"` // 外星人移动速度
+	TitleFontSize    int     `json:"titleFontSize"`
+	SmallFontSize    int     `json:"smallFontSize"`
+	FontSize         int     `json:"fontSize"`
 }
 
 func loadConfig() *Config {

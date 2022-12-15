@@ -11,6 +11,10 @@ type Input struct {
 	lastBulletTime time.Time
 }
 
+func (i *Input) IsSpacePressed() bool {
+	return ebiten.IsKeyPressed(ebiten.KeySpace)
+}
+
 func (i *Input) Update(g *Game) {
 	now := time.Now()
 
