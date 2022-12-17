@@ -31,18 +31,18 @@ func (i *Input) Update(g *Game) {
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) { // <-
 		i.Msg = "left pressed"
-		g.Ship.X -= g.Cfg.ShipSpeedFactor
+		g.Ship.x -= g.Cfg.ShipSpeedFactor
 
 		// 边界判断
-		if g.Ship.X < -float64(g.Ship.width)/2 {
-			g.Ship.X = -float64(g.Ship.width) / 2
+		if g.Ship.X() < -float64(g.Ship.width)/2 {
+			g.Ship.x = -float64(g.Ship.width) / 2
 		}
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) { // ->
 		i.Msg = "right pressed"
-		g.Ship.X += g.Cfg.ShipSpeedFactor
+		g.Ship.x += g.Cfg.ShipSpeedFactor
 
-		if g.Ship.X > float64(g.Cfg.ScreenWidth)-float64(g.Ship.width)/2 {
-			g.Ship.X = float64(g.Cfg.ScreenWidth) - float64(g.Ship.width)/2
+		if g.Ship.X() > float64(g.Cfg.ScreenWidth)-float64(g.Ship.width)/2 {
+			g.Ship.x = float64(g.Cfg.ScreenWidth) - float64(g.Ship.width)/2
 		}
 	}
 }

@@ -7,23 +7,21 @@ import (
 )
 
 type Bullet struct {
+	GameObject
+
 	Image       *ebiten.Image
-	Width       int
-	Height      int
-	X           float64
-	Y           float64
 	SpeedFactor float64
 }
 
 func (bullet *Bullet) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(bullet.X, bullet.Y)
+	op.GeoM.Translate(bullet.X(), bullet.Y())
 
 	screen.DrawImage(bullet.Image, op)
 }
 
 func (bullet *Bullet) OutOfScreen() bool {
-	return bullet.Y < -float64(bullet.Height)
+	return bullet.Y() < -float64(bullet.Height())
 }
 
 func NewBullet(cfg *Config, ship *Ship) *Bullet {
@@ -33,11 +31,13 @@ func NewBullet(cfg *Config, ship *Ship) *Bullet {
 	img.Fill(cfg.BulletColor)
 
 	return &Bullet{
-		Image:       img,
-		Width:       cfg.BulletWidth,
-		Height:      cfg.BulletHeight,
-		X:           ship.X + float64(ship.width-cfg.BulletWidth)/2,
-		Y:           float64(cfg.ScreenHeight - ship.height - cfg.BulletHeight),
+		Image: img,
+		GameObject: GameObject{
+			width:  cfg.BulletWidth,
+			height: cfg.BulletHeight,
+			x:      ship.X() + float64(ship.Width()-cfg.BulletWidth)/2,
+			y:      float64(cfg.ScreenHeight - ship.Height() - cfg.BulletHeight),
+		},
 		SpeedFactor: cfg.BulletSpeedFactor,
 	}
 }

@@ -23,6 +23,7 @@ var (
 	titleArcadeFont font.Face
 	arcadeFont      font.Face
 	smallArcadeFont font.Face
+	FlushCnt        = 0 // &&&
 )
 
 type Game struct {
@@ -33,6 +34,8 @@ type Game struct {
 
 	bullets map[*Bullet]struct{} // 多个子弹
 	aliens  map[*Alien]struct{}  // 多个外星人
+
+	FailCount int // 失败次数
 }
 
 // CreateFonts 创建字体
@@ -85,11 +88,12 @@ func NewGame() *Game {
 	ebiten.SetWindowTitle(cfg.Title)
 
 	g := &Game{
-		Input:   &Input{},
-		Ship:    NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
-		Cfg:     cfg,
-		bullets: make(map[*Bullet]struct{}),
-		aliens:  make(map[*Alien]struct{}),
+		Input:     &Input{},
+		Ship:      NewShip(cfg.ScreenWidth, cfg.ScreenHeight),
+		Cfg:       cfg,
+		bullets:   make(map[*Bullet]struct{}),
+		aliens:    make(map[*Alien]struct{}),
+		FailCount: 0,
 	}
 
 	// 创建一批外星人、字体
@@ -112,13 +116,13 @@ func (g *Game) CreateAliens() {
 	for row := 0; row < 2; row++ {
 		alien := NewAlien(g.Cfg)
 
-		availableSpaceX := g.Cfg.ScreenWidth - 2*alien.Width
-		numAliens := availableSpaceX / (2 * alien.Width)
+		availableSpaceX := g.Cfg.ScreenWidth - 2*alien.Width()
+		numAliens := availableSpaceX / (2 * alien.Width())
 
 		for i := 0; i < numAliens; i++ {
 			alien = NewAlien(g.Cfg)
-			alien.X = float64(alien.Width + 2*alien.Width*i)
-			alien.Y = float64(alien.Height*row) * 1.5
+			alien.x = float64(alien.Width() + 2*alien.Width()*i)
+			alien.y = float64(alien.Height()*row) * 1.5
 
 			g.addAlien(alien)
 		}
@@ -127,15 +131,31 @@ func (g *Game) CreateAliens() {
 
 func (g *Game) CheckCollision() {
 	for alien := range g.aliens {
+		// 子弹是否击中外星人
 		for bullet := range g.bullets {
 			if CheckCollision(bullet, alien) {
 				delete(g.aliens, alien)
 				delete(g.bullets, bullet)
 			}
 		}
+
+		// 外星人是否移出屏幕
+		if alien.OutOfScreen(g.Cfg) {
+			g.FailCount++
+			delete(g.aliens, alien)
+			continue
+		}
+
+		// 外星人是否击中飞船
+		if CheckCollision(alien, g.Ship) {
+			g.FailCount++
+			delete(g.aliens, alien)
+			continue
+		}
 	}
 }
 
+// update 更新参数，先update再draw
 func (g *Game) Update() error {
 	switch g.Mode {
 	case ModeTitle: // 开始游戏
@@ -148,13 +168,13 @@ func (g *Game) Update() error {
 			if bullet.OutOfScreen() { // 超出屏幕
 				delete(g.bullets, bullet)
 			} else {
-				bullet.Y -= bullet.SpeedFactor
+				bullet.y -= bullet.SpeedFactor
 			}
 		}
 
 		// 更新外星人轨迹
 		for alien := range g.aliens {
-			alien.Y += alien.SpeedFactor
+			alien.y += alien.SpeedFactor
 		}
 
 		// 更新飞船
